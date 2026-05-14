@@ -8,7 +8,13 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.24"/>
+        <PackageReference Include="Microsoft.Data.SqlClient" Version="7.1.0-preview1.26124.5" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.23" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Controllers\" />
     </ItemGroup>
 
 </Project>

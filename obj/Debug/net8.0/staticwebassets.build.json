@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "WqJzY1kC0aBfNHj+7JF1D6DVQnEspObQ42dR8dbWOmE=",
+  "Source": "PharmaNestBackend",
+  "BasePath": "_content/PharmaNestBackend",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
