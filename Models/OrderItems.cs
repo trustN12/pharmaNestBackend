@@ -1,12 +1,12 @@
 namespace PharmaNestBackend.Models;
 
-public class Cart
+public class OrderItems
 {
     public int ID { get; set; }
 
-    public int UserId { get; set; }
+    public int OrderID { get; set; }
 
-    /*public int MedicineID { get; set; }*/
+    public int MedicineID { get; set; }
 
     public decimal UnitPrice { get; set; }
 
@@ -15,6 +15,7 @@ public class Cart
     public int Quantity { get; set; }
 
     public decimal TotalPrice { get; set; }
-    
 }
+
+
 
