@@ -5,7 +5,8 @@ namespace PharmaNestBackend.Models;
 
 public class DAL
 {
-    public Response register(Users users, SqlConnection connection)
+    /* FOR REGISTRATION */
+    public Response Register(Users users, SqlConnection connection)
     {
         Response response = new Response();
         SqlCommand cmd = new SqlCommand("sp_register", connection);
@@ -36,5 +37,34 @@ public class DAL
         }
         
         return response;
+    }
+    
+    /* FOR LOGIN */
+
+    public Response Login(Users users, SqlConnection connection)
+    {
+        SqlDataAdapter da = new SqlDataAdapter("sp_login", connection);
+        
+        da.SelectCommand.CommandType = CommandType.StoredProcedure;
+        da.SelectCommand.Parameters.AddWithValue("@Email", users.Email);
+        da.SelectCommand.Parameters.AddWithValue("@Password", users.Password);
+
+        DataTable dt = new DataTable();
+        da.Fill(dt);
+
+        Response response = new Response();
+        if (dt.Rows.Count > 0)
+        {
+            response.StatusCode = 200;
+            response.StatusMessage = "Login Successful";
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "Invalid credentials";
+        }
+
+        return response;
+
     }
 }
