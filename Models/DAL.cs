@@ -39,6 +39,10 @@ public class DAL
         return response;
     }
     
+    
+    
+    
+    
     /* FOR LOGIN */
 
     public Response Login(Users users, SqlConnection connection)
@@ -53,18 +57,74 @@ public class DAL
         da.Fill(dt);
 
         Response response = new Response();
+
+        Users user = new Users();
+        
         if (dt.Rows.Count > 0)
         {
+            user.ID = Convert.ToInt32(dt.Rows[0]["ID"]);
+            user.FirstName = Convert.ToString(dt.Rows[0]["FirstName"]);
+            user.LastName = Convert.ToString(dt.Rows[0]["LastName"]);
+            user.Email = Convert.ToString(dt.Rows[0]["Email"]);
+            user.Type = Convert.ToString(dt.Rows[0]["Type"]);
             response.StatusCode = 200;
             response.StatusMessage = "Login Successful";
+            response.user = user;
         }
         else
         {
             response.StatusCode = 100;
             response.StatusMessage = "Invalid credentials";
+            response.user = null;
         }
 
         return response;
 
+    }
+    
+    
+    
+    
+    
+    /* FOR VIEWING USER */
+
+    public Response ViewUser(Users users, SqlConnection connection)
+    {
+        SqlDataAdapter da = new SqlDataAdapter("sp_viewUser", connection);
+
+        da.SelectCommand.CommandType = CommandType.StoredProcedure;
+        da.SelectCommand.Parameters.AddWithValue("@ID", users.ID);
+
+        DataTable dt = new DataTable();
+        da.Fill(dt);
+        
+        Response response = new Response();
+        
+        Users user = new Users();
+        
+        if (dt.Rows.Count > 0)
+        {
+            user.ID = Convert.ToInt32(dt.Rows[0]["ID"]);
+            user.FirstName = Convert.ToString(dt.Rows[0]["FirstName"]);
+            user.LastName = Convert.ToString(dt.Rows[0]["LastName"]);
+            user.Email = Convert.ToString(dt.Rows[0]["Email"]);
+            user.Type = Convert.ToString(dt.Rows[0]["Type"]);
+            user.Fund = Convert.ToDecimal(dt.Rows[0]["Fund"]);
+            user.CreatedOn = Convert.ToDateTime(dt.Rows[0]["CreatedOn"]);
+            user.Password = Convert.ToString(dt.Rows[0]["Password"]);
+            
+            response.StatusCode = 200;
+            response.StatusMessage = "User exists";
+            response.user = user;
+            
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "User does not exist";
+            response.user = null;
+        }
+
+        return response;
     }
 }

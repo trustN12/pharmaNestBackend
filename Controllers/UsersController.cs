@@ -20,8 +20,8 @@ namespace PharmaNestBackend.Controllers
 
         /* REGISTRATION API */
         [HttpPost]
-        [Route("registration")]
-        public Response register(Users users)
+        [Route("Registration")]
+        public Response Register(Users users)
         {
             Response response = new Response();
             DAL dal = new DAL();
@@ -33,14 +33,30 @@ namespace PharmaNestBackend.Controllers
         
         /* LOGIN API */
         [HttpPost]
-        [Route("login")]
+        [Route("Login")]
 
-        public Response login(Users users)
+        public Response Login(Users users)
         {
             
             DAL dal = new DAL();
             SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PharmaNestCS").ToString());
             Response response = dal.Login(users, connection);
+            return response;
+        }
+        
+        
+        
+        
+        /* VIEW USER API */
+        [HttpPost]
+        [Route("ViewUser")]
+        
+        public Response ViewUser(Users users)
+        {
+            
+            DAL dal = new DAL();
+            SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PharmaNestCS").ToString());
+            Response response = dal.ViewUser(users, connection);
             return response;
         }
     }

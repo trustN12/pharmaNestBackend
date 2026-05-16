@@ -8,7 +8,7 @@ public class Response
     
     public List<Users> listUsers { get; set; }
 
-    public Users user { get; set; }
+    public Users? user { get; set; }
 
     public List<Medicines> listMedicines { get; set; }
 
