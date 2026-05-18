@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Data.SqlClient;
 using PharmaNestBackend.Models;
 
@@ -61,7 +62,7 @@ namespace PharmaNestBackend.Controllers
         }
         
         
-        /* EDIT OR UPDATE USER PROFILE */
+        /* EDIT OR UPDATE USER PROFILE API */
 
         [HttpPost]
         [Route("UpdateProfile")]
@@ -73,6 +74,7 @@ namespace PharmaNestBackend.Controllers
             Response response = dal.UpdateProfile(users, connection);
             return response;
         }
+        
         
     }
 }

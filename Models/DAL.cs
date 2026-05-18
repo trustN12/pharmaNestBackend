@@ -161,4 +161,41 @@ public class DAL
         return response;
 
     }
+    
+    
+    
+    /* ADD TO CART */
+
+    public Response AddToCart(Cart cart, SqlConnection connection)
+    {
+        
+        Response response = new Response();
+
+        SqlCommand cmd = new SqlCommand("sp_addToCart", connection);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@UserId", cart.UserId);
+        cmd.Parameters.AddWithValue("@UnitPrice", cart.UnitPrice);
+        cmd.Parameters.AddWithValue("@Discount", cart.Discount);
+        cmd.Parameters.AddWithValue("@Quantity", cart.Quantity);
+        cmd.Parameters.AddWithValue("@TotalPrice", cart.TotalPrice);
+        cmd.Parameters.AddWithValue("@MedicineID", cart.MedicineID);
+
+        connection.Open();
+        int i = cmd.ExecuteNonQuery();
+        connection.Close();
+        
+        if (i > 0)
+        {
+            response.StatusCode = 200;
+            response.StatusMessage = "Item added to cart successfully";
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "Some error occured. Try after sometime!!";
+        }
+
+        return response;
+    }
 }

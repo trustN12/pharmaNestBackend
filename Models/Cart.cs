@@ -6,7 +6,7 @@ public class Cart
 
     public int UserId { get; set; }
 
-    /*public int MedicineID { get; set; }*/
+    public int MedicineID { get; set; }
 
     public decimal UnitPrice { get; set; }
 
