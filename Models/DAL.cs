@@ -127,4 +127,38 @@ public class DAL
 
         return response;
     }
+    
+    /* UPDATE PROFILE OF USER */
+
+    public Response UpdateProfile(Users users, SqlConnection connection)
+    {
+        Response response = new Response();
+
+        SqlCommand cmd = new SqlCommand("sp_updateProfile", connection);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@ID", users.ID);
+        cmd.Parameters.AddWithValue("@FirstName", users.FirstName);
+        cmd.Parameters.AddWithValue("@LastName", users.LastName);
+        cmd.Parameters.AddWithValue("@Email", users.Email);
+        cmd.Parameters.AddWithValue("@Password", users.Password);
+        
+        connection.Open();
+        int i = cmd.ExecuteNonQuery();
+        connection.Close();
+
+        if (i > 0)
+        {
+            response.StatusCode = 200;
+            response.StatusMessage = "Record updated successfully";
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "Some error occured. Try after sometime!!";
+        }
+
+        return response;
+
+    }
 }

@@ -59,5 +59,20 @@ namespace PharmaNestBackend.Controllers
             Response response = dal.ViewUser(users, connection);
             return response;
         }
+        
+        
+        /* EDIT OR UPDATE USER PROFILE */
+
+        [HttpPost]
+        [Route("UpdateProfile")]
+
+        public Response UpdateProfile(Users users)
+        {
+            DAL dal = new DAL();
+            SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PharmaNestCS").ToString());
+            Response response = dal.UpdateProfile(users, connection);
+            return response;
+        }
+        
     }
 }
