@@ -47,5 +47,20 @@ namespace PharmaNestBackend.Controllers
 
             return response;
         }
+        
+        
+        
+        /* VIEWING USER ORDER LIST API */
+        [HttpPost]
+        [Route("OrderList")]
+
+        public Response OrderList(Users users)
+        {
+            DAL dal = new DAL();
+            SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PharmaNestCS").ToString());
+            Response response = dal.OrderList(users, connection);
+
+            return response;
+        }
     }
 }
