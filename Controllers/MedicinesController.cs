@@ -62,5 +62,24 @@ namespace PharmaNestBackend.Controllers
 
             return response;
         }
+        
+        
+        
+        /* MEDICINES LIST API */
+        [HttpGet]
+        [Route("MedicineList")]
+
+        public Response MedicineList()
+        {
+            DAL dal = new DAL();
+
+            SqlConnection connection = new SqlConnection(
+                _configuration.GetConnectionString("PharmaNestCS").ToString()
+            );
+
+            Response response = dal.MedicineList(connection);
+
+            return response;
+        }
     }
 }

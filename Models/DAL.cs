@@ -281,4 +281,263 @@ public class DAL
 
         return response;
     }
+    
+    
+    
+    /* ADD UPDATE MEDICINES */
+
+    public Response AddUpdateMedicine(Medicines medicine, SqlConnection connection)
+    {
+        Response response = new Response();
+
+        SqlCommand cmd = new SqlCommand("sp_addUpdateMedicine", connection);
+
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@Id", medicine.Id);
+
+        cmd.Parameters.AddWithValue("@MedicineName", medicine.MedicineName);
+
+        cmd.Parameters.AddWithValue("@Manufacturer", medicine.Manufacturer);
+
+        cmd.Parameters.AddWithValue("@Category", medicine.Category);
+
+        cmd.Parameters.AddWithValue("@UnitPrice", medicine.UnitPrice);
+
+        cmd.Parameters.AddWithValue("@DiscountedPrice", medicine.DiscountedPrice);
+
+        cmd.Parameters.AddWithValue("@Stock", medicine.Stock);
+
+        cmd.Parameters.AddWithValue("@ExpiryDate", medicine.ExpiryDate);
+
+        cmd.Parameters.AddWithValue("@Description", medicine.Description);
+
+        cmd.Parameters.AddWithValue("@ImageUrl", medicine.ImageUrl);
+
+        connection.Open();
+
+        int i = cmd.ExecuteNonQuery();
+
+        connection.Close();
+
+        if (i > 0)
+        {
+            response.StatusCode = 200;
+            response.StatusMessage = "Medicine Added Successfully";
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "Failed";
+        }
+
+        return response;
+    }
+    
+    
+    /* MEDICINES LIST */
+    public Response MedicineList(SqlConnection connection)
+    {
+        Response response = new Response();
+
+        List<Medicines> listMedicines = new List<Medicines>();
+
+        SqlDataAdapter da = new SqlDataAdapter(
+            "sp_getMedicines",
+            connection
+        );
+
+        da.SelectCommand.CommandType =
+            CommandType.StoredProcedure;
+
+        DataTable dt = new DataTable();
+
+        da.Fill(dt);
+
+        if (dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                Medicines medicine = new Medicines();
+
+                medicine.Id =
+                    Convert.ToInt32(dt.Rows[i]["Id"]);
+
+                medicine.MedicineName =
+                    Convert.ToString(dt.Rows[i]["MedicineName"]);
+
+                medicine.Manufacturer =
+                    Convert.ToString(dt.Rows[i]["Manufacturer"]);
+
+                medicine.Category =
+                    Convert.ToString(dt.Rows[i]["Category"]);
+
+                medicine.UnitPrice =
+                    Convert.ToDecimal(dt.Rows[i]["UnitPrice"]);
+
+                medicine.DiscountedPrice =
+                    Convert.ToDecimal(dt.Rows[i]["DiscountedPrice"]);
+
+                medicine.Stock =
+                    Convert.ToInt32(dt.Rows[i]["Stock"]);
+
+                medicine.ExpiryDate =
+                    Convert.ToString(dt.Rows[i]["ExpiryDate"]);
+
+                medicine.Description =
+                    Convert.ToString(dt.Rows[i]["Description"]);
+
+                medicine.ImageUrl =
+                    Convert.ToString(dt.Rows[i]["ImageUrl"]);
+
+                listMedicines.Add(medicine);
+            }
+
+            response.StatusCode = 200;
+            response.StatusMessage = "Medicines fetched";
+            response.listMedicines = listMedicines;
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "No medicines found";
+            response.listMedicines = null;
+        }
+
+        return response;
+    }
+    
+    
+    /* GET ALL USERS */
+
+    public Response GetUsers(SqlConnection connection)
+    {
+        Response response = new Response();
+
+        SqlDataAdapter da = new SqlDataAdapter(
+            "sp_getUsers",
+            connection
+        );
+
+        da.SelectCommand.CommandType =
+            CommandType.StoredProcedure;
+
+        DataTable dt = new DataTable();
+
+        da.Fill(dt);
+
+        List<Users> listUsers = new List<Users>();
+
+        foreach (DataRow row in dt.Rows)
+        {
+            Users user = new Users();
+
+            user.ID = Convert.ToInt32(row["ID"]);
+            user.FirstName = Convert.ToString(row["FirstName"]);
+            user.LastName = Convert.ToString(row["LastName"]);
+            user.Email = Convert.ToString(row["Email"]);
+            user.Password = Convert.ToString(row["Password"]);
+            user.Type = Convert.ToString(row["Type"]);
+            user.Status = Convert.ToString(row["Status"]);
+
+            listUsers.Add(user);
+        }
+
+        if (listUsers.Count > 0)
+        {
+            response.StatusCode = 200;
+            response.StatusMessage = "Users Found";
+            response.listUsers = listUsers;
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "No Users Found";
+            response.listUsers = null;
+        }
+
+        return response;
+    }
+    
+    
+    
+    /* APPROVE USER */
+
+    public Response ApproveUser(
+        int id,
+        SqlConnection connection
+    )
+    {
+        Response response = new Response();
+
+        SqlCommand cmd = new SqlCommand(
+            "sp_approveUser",
+            connection
+        );
+
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@ID", id);
+
+        connection.Open();
+
+        int i = cmd.ExecuteNonQuery();
+
+        connection.Close();
+
+        if (i > 0)
+        {
+            response.StatusCode = 200;
+            response.StatusMessage = "User Approved";
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "User Not Approved";
+        }
+
+        return response;
+    }
+    
+    
+    
+    /* ADMIN DETAILS */
+    public Response GetAdminProfile(SqlConnection connection)
+    {
+        Response response = new Response();
+
+        SqlCommand cmd = new SqlCommand(
+            "SELECT TOP 1 * FROM Users WHERE Type = 'Admin'",
+            connection
+        );
+
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+
+        DataTable dt = new DataTable();
+
+        da.Fill(dt);
+
+        if (dt.Rows.Count > 0)
+        {
+            response.StatusCode = 200;
+            response.StatusMessage = "Admin Found";
+
+            response.Admin = new Users()
+            {
+                ID = Convert.ToInt32(dt.Rows[0]["ID"]),
+                FirstName = Convert.ToString(dt.Rows[0]["FirstName"]),
+                LastName = Convert.ToString(dt.Rows[0]["LastName"]),
+                Email = Convert.ToString(dt.Rows[0]["Email"]),
+                Type = Convert.ToString(dt.Rows[0]["Type"]),
+                Status = Convert.ToString(dt.Rows[0]["Status"])
+            };
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "No Admin Found";
+        }
+
+        return response;
+    }
 }
