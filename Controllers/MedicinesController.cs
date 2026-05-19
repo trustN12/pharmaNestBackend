@@ -32,5 +32,20 @@ namespace PharmaNestBackend.Controllers
             return response;
 
         }
+        
+        
+        
+        /* ORDER PLACEMENT FROM THE CART API */
+        [HttpPost]
+        [Route("PlaceOrder")]
+
+        public Response PlaceOrder(Users users)
+        {
+            DAL dal = new DAL();
+            SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PharmaNestCS").ToString());
+            Response response = dal.PlaceOrder(users, connection);
+
+            return response;
+        }
     }
 }

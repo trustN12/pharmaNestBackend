@@ -198,4 +198,33 @@ public class DAL
 
         return response;
     }
+    
+    
+    
+    /* PLACE ORDER FROM CART */
+
+    public Response PlaceOrder(Users users, SqlConnection connection)
+    {
+        Response response = new Response();
+        SqlCommand cmd = new SqlCommand("sp_placeOrder", connection);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@ID", users.ID);
+        connection.Open();
+
+        int i = cmd.ExecuteNonQuery();
+        connection.Close();
+        
+        if (i > 0)
+        {
+            response.StatusCode = 200;
+            response.StatusMessage = "Order has been placed successfully";
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "Some error occured. Try after sometime!!";
+        }
+        
+        return response;
+    }
 }
