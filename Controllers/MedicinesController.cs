@@ -81,5 +81,49 @@ namespace PharmaNestBackend.Controllers
 
             return response;
         }
+        
+        
+        
+        /* GET CART API */
+        [HttpPost]
+        [Route("GetCart")]
+        public Response GetCart(CartRequest request)
+        {
+            DAL dal = new DAL();
+
+            SqlConnection connection = new SqlConnection(
+                _configuration.GetConnectionString("PharmaNestCS").ToString()
+            );
+
+            return dal.GetCart(request.UserId, connection);
+        }
+        
+        
+        /* DELETE CART API */
+        [HttpPost]
+        [Route("DeleteCartItem")]
+        public Response DeleteCartItem([FromBody] Cart cart)
+        {
+            DAL dal = new DAL();
+            SqlConnection connection = new SqlConnection(
+                _configuration.GetConnectionString("PharmaNestCS")
+            );
+
+            return dal.DeleteCartItem(cart.ID, connection);
+        }
+        
+        
+        /* UPDATE QUANTITY API */
+        [HttpPost]
+        [Route("UpdateCartQuantity")]
+        public Response UpdateCartQuantity([FromBody] Cart cart)
+        {
+            DAL dal = new DAL();
+            SqlConnection connection = new SqlConnection(
+                _configuration.GetConnectionString("PharmaNestCS")
+            );
+
+            return dal.UpdateCartQuantity(cart, connection);
+        }
     }
 }

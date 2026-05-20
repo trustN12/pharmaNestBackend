@@ -540,4 +540,114 @@ public class DAL
 
         return response;
     }
+    
+    
+    /* GETTING CART DETAILS */
+    public Response GetCart(int userId, SqlConnection connection)
+    {
+        Response response = new Response();
+        List<Cart> list = new List<Cart>();
+
+        try
+        {
+            SqlDataAdapter da = new SqlDataAdapter("sp_getCart", connection);
+            da.SelectCommand.CommandType = CommandType.StoredProcedure;
+            da.SelectCommand.Parameters.AddWithValue("@UserId", userId);
+
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+
+            foreach (DataRow row in dt.Rows)
+            {
+                Cart cart = new Cart
+                {
+                    ID = Convert.ToInt32(row["ID"]),
+                    UserId = Convert.ToInt32(row["UserId"]),
+                    MedicineID = Convert.ToInt32(row["MedicineID"]),
+
+                    MedicineName = row["MedicineName"]?.ToString(),
+                    Manufacturer = row["Manufacturer"]?.ToString(),
+                    Category = row["Category"]?.ToString(),
+                    ImageUrl = row["ImageUrl"]?.ToString(),
+
+                    UnitPrice = Convert.ToDecimal(row["UnitPrice"]),
+                    Discount = Convert.ToDecimal(row["Discount"]),
+                    Quantity = Convert.ToInt32(row["Quantity"]),
+                    TotalPrice = Convert.ToDecimal(row["TotalPrice"])
+                };
+
+                list.Add(cart);
+            }
+
+            response.StatusCode = 200;
+            response.StatusMessage = "Cart fetched successfully";
+            response.listCart = list;
+        }
+        catch (Exception ex)
+        {
+            response.StatusCode = 500;
+            response.StatusMessage = ex.Message;
+        }
+
+        return response;
+    }
+    
+    
+    /* DELETE CART ITEMS */
+    public Response DeleteCartItem(int id, SqlConnection connection)
+    {
+        Response response = new Response();
+
+        SqlCommand cmd = new SqlCommand("sp_deleteCartItem", connection);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@ID", id);
+
+        connection.Open();
+        int i = cmd.ExecuteNonQuery();
+        connection.Close();
+
+        if (i > 0)
+        {
+            response.StatusCode = 200;
+            response.StatusMessage = "Item removed from cart";
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "Failed to remove item";
+        }
+
+        return response;
+    }
+    
+    
+    /* UPDATE CART QUANTITY */
+    public Response UpdateCartQuantity(Cart cart, SqlConnection connection)
+    {
+        Response response = new Response();
+
+        SqlCommand cmd = new SqlCommand("sp_updateCartQuantity", connection);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@ID", cart.ID);
+        cmd.Parameters.AddWithValue("@Quantity", cart.Quantity);
+
+        connection.Open();
+        int i = cmd.ExecuteNonQuery();
+        connection.Close();
+
+        if (i > 0)
+        {
+            response.StatusCode = 200;
+            response.StatusMessage = "Cart updated";
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "Update failed";
+        }
+
+        return response;
+    }
 }

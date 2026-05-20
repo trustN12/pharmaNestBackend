@@ -16,5 +16,13 @@ public class Cart
 
     public decimal TotalPrice { get; set; }
     
+    public string? MedicineName { get; set; }
+
+    public string? Manufacturer { get; set; }
+
+    public string? Category { get; set; }
+
+    public string? ImageUrl { get; set; }
+    
 }
 
