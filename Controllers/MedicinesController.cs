@@ -125,5 +125,28 @@ namespace PharmaNestBackend.Controllers
 
             return dal.UpdateCartQuantity(cart, connection);
         }
+        
+        
+        
+        /* ADD UPDATE MEDICINE API */
+        [HttpPost]
+        [Route("AddUpdateMedicine")]
+        public Response AddUpdateMedicine(Medicines medicine)
+        {
+            DAL dal = new DAL();
+
+            SqlConnection connection = new SqlConnection(
+                _configuration.GetConnectionString("PharmaNestCS").ToString()
+            );
+
+            Response response = dal.AddUpdateMedicine(
+                medicine,
+                connection
+            );
+
+            return response;
+        }
+        
+        
     }
 }

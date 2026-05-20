@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PharmaNestBackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ed4ec5d34177b84bd1c48030ad6f062d88f03492")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+58d4fb6c38a05f0e99bd4218ca26cb7f2f958d4c")]
 [assembly: System.Reflection.AssemblyProductAttribute("PharmaNestBackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PharmaNestBackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

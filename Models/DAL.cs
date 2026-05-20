@@ -168,23 +168,48 @@ public class DAL
 
     public Response AddToCart(Cart cart, SqlConnection connection)
     {
-        
         Response response = new Response();
+
+        // STEP 1: fetch medicine price from DB (IMPORTANT FIX)
+        SqlCommand priceCmd = new SqlCommand(
+            "SELECT UnitPrice, DiscountedPrice FROM Medicines WHERE Id = @MedicineID",
+            connection
+        );
+
+        priceCmd.Parameters.AddWithValue("@MedicineID", cart.MedicineID);
+
+        SqlDataAdapter da = new SqlDataAdapter(priceCmd);
+        DataTable dt = new DataTable();
+        da.Fill(dt);
+
+        if (dt.Rows.Count == 0)
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "Medicine not found";
+            return response;
+        }
+
+        decimal unitPrice = Convert.ToDecimal(dt.Rows[0]["UnitPrice"]);
+        decimal discountedPrice = Convert.ToDecimal(dt.Rows[0]["DiscountedPrice"]);
+
+        decimal finalPrice = discountedPrice; // ALWAYS use discounted price
+
+        decimal totalPrice = finalPrice * cart.Quantity;
 
         SqlCommand cmd = new SqlCommand("sp_addToCart", connection);
         cmd.CommandType = CommandType.StoredProcedure;
 
         cmd.Parameters.AddWithValue("@UserId", cart.UserId);
-        cmd.Parameters.AddWithValue("@UnitPrice", cart.UnitPrice);
-        cmd.Parameters.AddWithValue("@Discount", cart.Discount);
+        cmd.Parameters.AddWithValue("@UnitPrice", unitPrice);
+        cmd.Parameters.AddWithValue("@Discount", unitPrice - discountedPrice);
         cmd.Parameters.AddWithValue("@Quantity", cart.Quantity);
-        cmd.Parameters.AddWithValue("@TotalPrice", cart.TotalPrice);
+        cmd.Parameters.AddWithValue("@TotalPrice", totalPrice);
         cmd.Parameters.AddWithValue("@MedicineID", cart.MedicineID);
 
         connection.Open();
         int i = cmd.ExecuteNonQuery();
         connection.Close();
-        
+
         if (i > 0)
         {
             response.StatusCode = 200;
@@ -198,7 +223,6 @@ public class DAL
 
         return response;
     }
-    
     
     
     /* PLACE ORDER FROM CART */
@@ -290,50 +314,57 @@ public class DAL
     {
         Response response = new Response();
 
-        SqlCommand cmd = new SqlCommand("sp_addUpdateMedicine", connection);
-
-        cmd.CommandType = CommandType.StoredProcedure;
-
-        cmd.Parameters.AddWithValue("@Id", medicine.Id);
-
-        cmd.Parameters.AddWithValue("@MedicineName", medicine.MedicineName);
-
-        cmd.Parameters.AddWithValue("@Manufacturer", medicine.Manufacturer);
-
-        cmd.Parameters.AddWithValue("@Category", medicine.Category);
-
-        cmd.Parameters.AddWithValue("@UnitPrice", medicine.UnitPrice);
-
-        cmd.Parameters.AddWithValue("@DiscountedPrice", medicine.DiscountedPrice);
-
-        cmd.Parameters.AddWithValue("@Stock", medicine.Stock);
-
-        cmd.Parameters.AddWithValue("@ExpiryDate", medicine.ExpiryDate);
-
-        cmd.Parameters.AddWithValue("@Description", medicine.Description);
-
-        cmd.Parameters.AddWithValue("@ImageUrl", medicine.ImageUrl);
-
-        connection.Open();
-
-        int i = cmd.ExecuteNonQuery();
-
-        connection.Close();
-
-        if (i > 0)
+        try
         {
-            response.StatusCode = 200;
-            response.StatusMessage = "Medicine Added Successfully";
+            SqlCommand cmd = new SqlCommand("sp_addUpdateMedicine", connection);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@Id", medicine.Id);
+
+            cmd.Parameters.AddWithValue("@MedicineName", medicine.MedicineName);
+
+            cmd.Parameters.AddWithValue("@Manufacturer", medicine.Manufacturer);
+
+            cmd.Parameters.AddWithValue("@Category", medicine.Category);
+
+            cmd.Parameters.AddWithValue("@UnitPrice", medicine.UnitPrice);
+
+            cmd.Parameters.AddWithValue("@DiscountedPrice", medicine.DiscountedPrice);
+
+            cmd.Parameters.AddWithValue("@Stock", medicine.Stock);
+
+            cmd.Parameters.AddWithValue("@ExpiryDate", medicine.ExpiryDate);
+
+            cmd.Parameters.AddWithValue("@Description", medicine.Description);
+
+            cmd.Parameters.AddWithValue("@ImageUrl", medicine.ImageUrl);
+
+            connection.Open();
+
+            int i = cmd.ExecuteNonQuery();
+
+            connection.Close();
+
+            if (i > 0)
+            {
+                response.StatusCode = 200;
+                response.StatusMessage = "Medicine Saved Successfully";
+            }
+            else
+            {
+                response.StatusCode = 100;
+                response.StatusMessage = "Failed";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            response.StatusCode = 100;
-            response.StatusMessage = "Failed";
+            response.StatusCode = 500;
+            response.StatusMessage = ex.Message;
         }
 
         return response;
     }
-    
     
     /* MEDICINES LIST */
     public Response MedicineList(SqlConnection connection)
