@@ -51,7 +51,7 @@ namespace PharmaNestBackend.Controllers
             using (SqlConnection connection =
                    new SqlConnection(_configuration.GetConnectionString("PharmaNestCS")))
             {
-                connection.Open();
+                /*connection.Open();*/
 
                 var response = dal.PlaceOrder(req, connection);
 
@@ -64,16 +64,25 @@ namespace PharmaNestBackend.Controllers
         /* VIEWING USER ORDER LIST API */
         [HttpPost]
         [Route("OrderList")]
-
-        public Response OrderList(Users users)
+        public IActionResult OrderList(Users users)
         {
-            DAL dal = new DAL();
-            SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PharmaNestCS").ToString());
-            Response response = dal.OrderList(users, connection);
+            try
+            {
+                DAL dal = new DAL();
 
-            return response;
+                SqlConnection connection = new SqlConnection(
+                    _configuration.GetConnectionString("PharmaNestCS").ToString()
+                );
+
+                Response response = dal.OrderList(users, connection);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
-        
         
         
         /* MEDICINES LIST API */

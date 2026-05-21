@@ -297,58 +297,89 @@ public class DAL
     
     /* VIEWING USER ORDER LIST */
     public Response OrderList(Users users, SqlConnection connection)
+{
+    Response response = new Response();
+
+    SqlCommand cmd = new SqlCommand("sp_orderList", connection);
+
+    cmd.CommandType = CommandType.StoredProcedure;
+
+    // VERY IMPORTANT
+    cmd.Parameters.AddWithValue("@UserId", users.ID);
+
+    // VERY IMPORTANT
+    cmd.Parameters.AddWithValue("@Type", users.Type);
+
+    SqlDataAdapter da = new SqlDataAdapter(cmd);
+
+    DataTable dt = new DataTable();
+
+    da.Fill(dt);
+
+    List<Orders> orderList = new List<Orders>();
+
+    if (dt.Rows.Count > 0)
     {
-        Response response = new Response();
-        
-        List<Orders> listOrder = new List<Orders>();
-        
-        SqlDataAdapter da = new SqlDataAdapter("sp_orderList", connection); /* We will use the same sp for user and admin as well */
-        da.SelectCommand.CommandType = CommandType.StoredProcedure;
-
-        da.SelectCommand.Parameters.AddWithValue("@Type", users.Type);
-        da.SelectCommand.Parameters.AddWithValue("@ID", users.ID);
-
-        DataTable dt = new DataTable();
-        da.Fill(dt);
-
-        if (dt.Rows.Count > 0)
+        for (int i = 0; i < dt.Rows.Count; i++)
         {
-            for (int i = 0; i < dt.Rows.Count; i++)
-            {
-                Orders order = new Orders();
-                order.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
-                order.OrderNo = Convert.ToString(dt.Rows[i]["OrderNo"]);
-                order.OrderTotal = Convert.ToDecimal((dt.Rows[i]["OrderTotal"]));
-                order.OrderStatus = Convert.ToString(dt.Rows[i]["OrderStatus"]);
-                
-                listOrder.Add(order);
-            }
+            Orders order = new Orders();
 
-            if (listOrder.Count > 0)
-            {
-                response.StatusCode = 200;
-                response.StatusMessage = "Order details fetched successfully";
-                response.listOrders = listOrder;
-            }
-            else
-            {
-                response.StatusCode = 100;
-                response.StatusMessage = "Unable to fetch order details right now!!";
-                response.listOrders = null;
-            }
-        }
-        else
-        {
-            response.StatusCode = 100;
-            response.StatusMessage = "Unable to fetch order details right now!!";
-            response.listOrders = null;
+            order.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
+
+            order.UserID =
+                Convert.ToInt32(dt.Rows[i]["UserID"]);
+
+            order.OrderNo =
+                dt.Rows[i]["OrderNo"].ToString();
+
+            order.OrderTotal =
+                Convert.ToDecimal(dt.Rows[i]["OrderTotal"]);
+
+            order.OrderStatus =
+                dt.Rows[i]["OrderStatus"].ToString();
+
+            order.ReceiverName =
+                dt.Rows[i]["ReceiverName"].ToString();
+
+            order.Phone =
+                dt.Rows[i]["Phone"].ToString();
+
+            order.AddressLine =
+                dt.Rows[i]["AddressLine"].ToString();
+
+            order.District =
+                dt.Rows[i]["District"].ToString();
+
+            order.State =
+                dt.Rows[i]["State"].ToString();
+
+            order.Pincode =
+                dt.Rows[i]["Pincode"].ToString();
+
+            order.RazorpayPaymentId =
+                dt.Rows[i]["RazorpayPaymentId"].ToString();
+
+            order.RazorpayOrderId =
+                dt.Rows[i]["RazorpayOrderId"].ToString();
+
+            orderList.Add(order);
         }
 
-        return response;
+        response.StatusCode = 200;
+
+        response.StatusMessage = "Orders Found";
+
+        response.listOrders = orderList;
     }
-    
-    
-    
+    else
+    {
+        response.StatusCode = 100;
+
+        response.StatusMessage = "No Orders Found";
+    }
+
+    return response;
+}
     /* ADD UPDATE MEDICINES */
 
     public Response AddUpdateMedicine(Medicines medicine, SqlConnection connection)
@@ -765,4 +796,39 @@ public class DAL
         cmd.ExecuteNonQuery();
         connection.Close();
     }
+    
+    
+    
+    /* CLEAR CART */
+    public Response ClearCart(Users users, SqlConnection connection)
+    {
+        Response response = new Response();
+
+        SqlCommand cmd = new SqlCommand(
+            "DELETE FROM Cart WHERE UserId = @UserId",
+            connection
+        );
+
+        cmd.Parameters.AddWithValue("@UserId", users.ID);
+
+        connection.Open();
+
+        int rows = cmd.ExecuteNonQuery();
+
+        connection.Close();
+
+        if (rows > 0)
+        {
+            response.StatusCode = 200;
+            response.StatusMessage = "Cart Cleared Successfully";
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "Cart Already Empty";
+        }
+
+        return response;
+    }
+    
 }
