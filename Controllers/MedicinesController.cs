@@ -1,8 +1,11 @@
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Data.SqlClient;
 using PharmaNestBackend.Models;
+using Razorpay.Api;
 
 namespace PharmaNestBackend.Controllers
 {
@@ -38,14 +41,22 @@ namespace PharmaNestBackend.Controllers
         /* ORDER PLACEMENT FROM THE CART API */
         [HttpPost]
         [Route("PlaceOrder")]
-
-        public Response PlaceOrder(Users users)
+        public IActionResult PlaceOrder([FromBody] PlaceOrderRequest req)
         {
-            DAL dal = new DAL();
-            SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PharmaNestCS").ToString());
-            Response response = dal.PlaceOrder(users, connection);
+            if (req == null)
+                return BadRequest("Invalid order request");
 
-            return response;
+            DAL dal = new DAL();
+
+            using (SqlConnection connection =
+                   new SqlConnection(_configuration.GetConnectionString("PharmaNestCS")))
+            {
+                connection.Open();
+
+                var response = dal.PlaceOrder(req, connection);
+
+                return Ok(response);
+            }
         }
         
         
@@ -148,5 +159,70 @@ namespace PharmaNestBackend.Controllers
         }
         
         
+        
+        
+        /* Razorpay Order API */
+        [HttpPost]
+        [Route("CreateOrder")]
+        public IActionResult CreateOrder([FromBody] OrderRequest req)
+        {
+            string key = _configuration["Razorpay:Key"];
+            string secret = _configuration["Razorpay:Secret"];
+
+            RazorpayClient client = new RazorpayClient(key, secret);
+
+            Dictionary<string, object> options = new Dictionary<string, object>();
+            options.Add("amount", req.amount * 100);
+            options.Add("currency", "INR");
+            options.Add("payment_capture", 1);
+
+            Order order = client.Order.Create(options);
+
+            // SAVE TO DB
+            DAL dal = new DAL();
+            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("PharmaNestCS")))
+            {
+                dal.CreatePaymentOrder(req.userId, req.amount, order["id"].ToString(), con);
+            }
+
+            return Ok(order);
+        }
+        
+        
+        
+        /* VERIFY PAYMENT API */
+        
+        [HttpPost]
+        [Route("VerifyPayment")]
+        public IActionResult VerifyPayment([FromBody] PaymentVerify req)
+        {
+            string secret = _configuration["Razorpay:Secret"];
+
+            string payload = req.razorpay_order_id + "|" + req.razorpay_payment_id;
+
+            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret)))
+            {
+                var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(payload));
+                var generatedSignature = BitConverter.ToString(hash).Replace("-", "").ToLower();
+
+                bool isValid = generatedSignature == req.razorpay_signature;
+
+                DAL dal = new DAL();
+
+                using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("PharmaNestCS")))
+                {
+                    dal.UpdatePaymentStatus(
+                        req,
+                        isValid ? "Success" : "Failed",
+                        con
+                    );
+                }
+
+                if (!isValid)
+                    return BadRequest("Invalid signature");
+
+                return Ok("Payment Verified");
+            }
+        }
     }
 }

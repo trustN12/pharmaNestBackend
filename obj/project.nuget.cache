@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "B00OswJnOco=",
+  "dgSpecHash": "hCncB1HLD+4=",
   "success": true,
   "projectFilePath": "/Users/algobot1210/Desktop/PharmaNest/PharmaNestBackend/PharmaNestBackend.csproj",
   "expectedPackageFiles": [
@@ -120,6 +120,8 @@
     "/Users/algobot1210/.nuget/packages/nuget.projectmodel/6.11.0/nuget.projectmodel.6.11.0.nupkg.sha512",
     "/Users/algobot1210/.nuget/packages/nuget.protocol/6.11.0/nuget.protocol.6.11.0.nupkg.sha512",
     "/Users/algobot1210/.nuget/packages/nuget.versioning/6.11.0/nuget.versioning.6.11.0.nupkg.sha512",
+    "/Users/algobot1210/.nuget/packages/portable.bouncycastle/1.9.0/portable.bouncycastle.1.9.0.nupkg.sha512",
+    "/Users/algobot1210/.nuget/packages/razorpay/3.3.2/razorpay.3.3.2.nupkg.sha512",
     "/Users/algobot1210/.nuget/packages/swashbuckle.aspnetcore/6.6.2/swashbuckle.aspnetcore.6.6.2.nupkg.sha512",
     "/Users/algobot1210/.nuget/packages/swashbuckle.aspnetcore.swagger/6.6.2/swashbuckle.aspnetcore.swagger.6.6.2.nupkg.sha512",
     "/Users/algobot1210/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.6.2/swashbuckle.aspnetcore.swaggergen.6.6.2.nupkg.sha512",

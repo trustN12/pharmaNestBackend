@@ -128,6 +128,8 @@ public class DAL
         return response;
     }
     
+    
+    
     /* UPDATE PROFILE OF USER */
 
     public Response UpdateProfile(Users users, SqlConnection connection)
@@ -227,6 +229,7 @@ public class DAL
     
     /* PLACE ORDER FROM CART */
 
+    /*
     public Response PlaceOrder(Users users, SqlConnection connection)
     {
         Response response = new Response();
@@ -251,6 +254,44 @@ public class DAL
         
         return response;
     }
+    */
+    
+    
+    public Response PlaceOrder(PlaceOrderRequest req, SqlConnection connection)
+    {
+        Response response = new Response();
+
+        SqlCommand cmd = new SqlCommand("sp_placeOrderWithAddress", connection);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@UserId", req.userId);
+        cmd.Parameters.AddWithValue("@ReceiverName", req.receiverName);
+        cmd.Parameters.AddWithValue("@Phone", req.phone);
+        cmd.Parameters.AddWithValue("@AddressLine", req.addressLine);
+        cmd.Parameters.AddWithValue("@District", req.district);
+        cmd.Parameters.AddWithValue("@State", req.state);
+        cmd.Parameters.AddWithValue("@Pincode", req.pincode);
+        cmd.Parameters.AddWithValue("@RazorpayPaymentId", req.razorpayPaymentId);
+        cmd.Parameters.AddWithValue("@RazorpayOrderId", req.razorpayOrderId);
+
+        connection.Open();
+        int i = cmd.ExecuteNonQuery();
+        connection.Close();
+
+        if (i > 0)
+        {
+            response.StatusCode = 200;
+            response.StatusMessage = "Order placed successfully";
+        }
+        else
+        {
+            response.StatusCode = 100;
+            response.StatusMessage = "Order failed";
+        }
+
+        return response;
+    }
+    
     
     
     
@@ -680,5 +721,48 @@ public class DAL
         }
 
         return response;
+    }
+    
+    
+    
+    /* CREATE PAYMENT ORDER */
+    public int CreatePaymentOrder(int userId, decimal amount, string razorpayOrderId, SqlConnection connection)
+    {
+        int paymentId = 0;
+
+        SqlCommand cmd = new SqlCommand("sp_createPaymentOrder", connection);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@UserId", userId);
+        cmd.Parameters.AddWithValue("@Amount", amount);
+        cmd.Parameters.AddWithValue("@RazorpayOrderId", razorpayOrderId);
+
+        connection.Open();
+
+        var result = cmd.ExecuteScalar();
+
+        if (result != null)
+            paymentId = Convert.ToInt32(result);
+
+        connection.Close();
+
+        return paymentId;
+    }
+    
+    
+    /* UPDATE PAYMENT AFTER VERIFICATION */
+    public void UpdatePaymentStatus(PaymentVerify req, string status, SqlConnection connection)
+    {
+        SqlCommand cmd = new SqlCommand("sp_updatePaymentStatus", connection);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@RazorpayOrderId", req.razorpay_order_id);
+        cmd.Parameters.AddWithValue("@RazorpayPaymentId", req.razorpay_payment_id);
+        cmd.Parameters.AddWithValue("@RazorpaySignature", req.razorpay_signature);
+        cmd.Parameters.AddWithValue("@Status", status);
+
+        connection.Open();
+        cmd.ExecuteNonQuery();
+        connection.Close();
     }
 }
