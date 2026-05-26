@@ -61,13 +61,18 @@ namespace PharmaNestBackend.Controllers
         
         
         
+      
         /* VIEWING USER ORDER LIST API */
         [HttpPost]
         [Route("OrderList")]
-        public IActionResult OrderList(Users users)
+// Add [FromBody] here so .NET deserializes the incoming React JSON body
+        public IActionResult OrderList([FromBody] Users users)
         {
             try
             {
+                if (users == null)
+                    return BadRequest("Invalid user payload.");
+
                 DAL dal = new DAL();
 
                 SqlConnection connection = new SqlConnection(
@@ -80,10 +85,9 @@ namespace PharmaNestBackend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex.ToString());
             }
         }
-        
         
         /* MEDICINES LIST API */
         [HttpGet]
@@ -233,5 +237,8 @@ namespace PharmaNestBackend.Controllers
                 return Ok("Payment Verified");
             }
         }
+        
+        
+        
     }
 }

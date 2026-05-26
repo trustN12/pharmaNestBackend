@@ -296,7 +296,7 @@ public class DAL
     
     
     /* VIEWING USER ORDER LIST */
-    public Response OrderList(Users users, SqlConnection connection)
+public Response OrderList(Users users, SqlConnection connection)
 {
     Response response = new Response();
 
@@ -324,43 +324,50 @@ public class DAL
         {
             Orders order = new Orders();
 
-            order.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
+            order.ID =
+                dt.Rows[i]["ID"] != DBNull.Value
+                ? Convert.ToInt32(dt.Rows[i]["ID"])
+                : 0;
 
             order.UserID =
-                Convert.ToInt32(dt.Rows[i]["UserID"]);
+                dt.Rows[i]["UserID"] != DBNull.Value
+                ? Convert.ToInt32(dt.Rows[i]["UserID"])
+                : 0;
 
             order.OrderNo =
-                dt.Rows[i]["OrderNo"].ToString();
+                dt.Rows[i]["OrderNo"]?.ToString() ?? "";
 
             order.OrderTotal =
-                Convert.ToDecimal(dt.Rows[i]["OrderTotal"]);
+                dt.Rows[i]["OrderTotal"] != DBNull.Value
+                ? Convert.ToDecimal(dt.Rows[i]["OrderTotal"])
+                : 0;
 
             order.OrderStatus =
-                dt.Rows[i]["OrderStatus"].ToString();
+                dt.Rows[i]["OrderStatus"]?.ToString() ?? "";
 
             order.ReceiverName =
-                dt.Rows[i]["ReceiverName"].ToString();
+                dt.Rows[i]["ReceiverName"]?.ToString() ?? "";
 
             order.Phone =
-                dt.Rows[i]["Phone"].ToString();
+                dt.Rows[i]["Phone"]?.ToString() ?? "";
 
             order.AddressLine =
-                dt.Rows[i]["AddressLine"].ToString();
+                dt.Rows[i]["AddressLine"]?.ToString() ?? "";
 
             order.District =
-                dt.Rows[i]["District"].ToString();
+                dt.Rows[i]["District"]?.ToString() ?? "";
 
             order.State =
-                dt.Rows[i]["State"].ToString();
+                dt.Rows[i]["State"]?.ToString() ?? "";
 
             order.Pincode =
-                dt.Rows[i]["Pincode"].ToString();
+                dt.Rows[i]["Pincode"]?.ToString() ?? "";
 
             order.RazorpayPaymentId =
-                dt.Rows[i]["RazorpayPaymentId"].ToString();
+                dt.Rows[i]["RazorpayPaymentId"]?.ToString() ?? "";
 
             order.RazorpayOrderId =
-                dt.Rows[i]["RazorpayOrderId"].ToString();
+                dt.Rows[i]["RazorpayOrderId"]?.ToString() ?? "";
 
             orderList.Add(order);
         }
@@ -380,6 +387,7 @@ public class DAL
 
     return response;
 }
+    
     /* ADD UPDATE MEDICINES */
 
     public Response AddUpdateMedicine(Medicines medicine, SqlConnection connection)
