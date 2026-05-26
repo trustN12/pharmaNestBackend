@@ -10,24 +10,35 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll",
         policy =>
         {
-            policy.AllowAnyOrigin()
+            policy
+                .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
 });
 
+
+
+builder.Configuration.AddEnvironmentVariables();
+
+
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
+// ENABLE SWAGGER IN BOTH LOCAL + RENDER
+app.UseSwagger();
+app.UseSwaggerUI();
+
+
+// CORS
 app.UseCors("AllowAll");
 
+
+// HTTPS
 app.UseHttpsRedirection();
 
+
+// CONTROLLERS
 app.MapControllers();
 
 app.Run();

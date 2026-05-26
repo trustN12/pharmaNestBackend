@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+
+  pharmanest-api:
+
+    build: .
+
+    container_name: pharmanest-api
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      - ConnectionStrings__PharmaNestCS=Server=host.docker.internal,1433;Database=EMedicine;User Id=sa;Password=Strong@12345;Encrypt=False;TrustServerCertificate=True
+
+      - Razorpay__Key=rzp_test_7FEQanUQWAA66x
+
+      - Razorpay__Secret=hwK8LJYeUPKnipqUoeVNr5Xp
