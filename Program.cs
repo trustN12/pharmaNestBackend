@@ -5,37 +5,48 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+// CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
+    options.AddPolicy("AllowFrontend",
         policy =>
         {
             policy
-                .AllowAnyOrigin()
+                .WithOrigins(
+                    "https://pharma-nest-frontend.vercel.app",
+                    "http://localhost:5173"
+                )
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
 });
 
 
-
 builder.Configuration.AddEnvironmentVariables();
-
 
 var app = builder.Build();
 
 
-// ENABLE SWAGGER IN BOTH LOCAL + RENDER
+// SWAGGER
 app.UseSwagger();
 app.UseSwaggerUI();
 
 
+// IMPORTANT ORDER
+app.UseRouting();
+
+
 // CORS
-app.UseCors("AllowAll");
+app.UseCors("AllowFrontend");
 
 
 // HTTPS
 app.UseHttpsRedirection();
+
+
+// AUTH (if future)
+app.UseAuthorization();
 
 
 // CONTROLLERS
