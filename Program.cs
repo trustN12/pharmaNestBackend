@@ -5,8 +5,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
@@ -22,34 +20,20 @@ builder.Services.AddCors(options =>
         });
 });
 
-
-builder.Configuration.AddEnvironmentVariables();
-
 var app = builder.Build();
 
-
-// SWAGGER
 app.UseSwagger();
 app.UseSwaggerUI();
 
-
-// IMPORTANT ORDER
 app.UseRouting();
 
-
-// CORS
 app.UseCors("AllowFrontend");
 
 
-// HTTPS
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
-
-// AUTH (if future)
 app.UseAuthorization();
 
-
-// CONTROLLERS
 app.MapControllers();
 
 app.Run();
