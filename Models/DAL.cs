@@ -446,6 +446,45 @@ public Response OrderList(Users users, SqlConnection connection)
         return response;
     }
     
+    
+    /* DELETE MEDICINE */
+    public Response DeleteMedicine(int id, SqlConnection connection)
+    {
+        Response response = new Response();
+
+        try
+        {
+            SqlCommand cmd = new SqlCommand(
+                "DELETE FROM Medicines WHERE Id = @Id",
+                connection
+            );
+
+            cmd.Parameters.AddWithValue("@Id", id);
+
+            connection.Open();
+            int i = cmd.ExecuteNonQuery();
+            connection.Close();
+
+            if (i > 0)
+            {
+                response.StatusCode = 200;
+                response.StatusMessage = "Medicine deleted successfully";
+            }
+            else
+            {
+                response.StatusCode = 100;
+                response.StatusMessage = "Medicine not found";
+            }
+        }
+        catch (Exception ex)
+        {
+            response.StatusCode = 500;
+            response.StatusMessage = ex.Message;
+        }
+
+        return response;
+    }
+    
     /* MEDICINES LIST */
     public Response MedicineList(SqlConnection connection)
     {

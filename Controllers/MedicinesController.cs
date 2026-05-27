@@ -240,5 +240,21 @@ namespace PharmaNestBackend.Controllers
         
         
         
+        /* DELETE MEDICINE FROM ADMIN API*/
+       
+        [HttpDelete]
+        [Route("DeleteMedicine/{id}")]
+        public Response DeleteMedicine(int id)
+        {
+            DAL dal = new DAL();
+
+            SqlConnection connection = new SqlConnection(
+                _configuration.GetConnectionString("PharmaNestCS")
+            );
+
+            return dal.DeleteMedicine(id, connection);
+        }
+        
+        
     }
 }
