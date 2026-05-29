@@ -390,6 +390,7 @@ public Response OrderList(Users users, SqlConnection connection)
     
     /* ADD UPDATE MEDICINES */
 
+    /*
     public Response AddUpdateMedicine(Medicines medicine, SqlConnection connection)
     {
         Response response = new Response();
@@ -445,7 +446,55 @@ public Response OrderList(Users users, SqlConnection connection)
 
         return response;
     }
+    */
     
+    public Response AddUpdateMedicine(Medicines medicine, SqlConnection connection)
+    {
+        Response response = new Response();
+
+        try
+        {
+            SqlCommand cmd = new SqlCommand("sp_addUpdateMedicine", connection);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@Id", medicine.Id);
+
+            cmd.Parameters.AddWithValue("@MedicineName", medicine.MedicineName);
+
+            cmd.Parameters.AddWithValue("@Manufacturer", medicine.Manufacturer);
+
+            cmd.Parameters.AddWithValue("@Category", medicine.Category);
+
+            cmd.Parameters.AddWithValue("@UnitPrice", medicine.UnitPrice);
+
+            cmd.Parameters.AddWithValue("@DiscountedPrice", medicine.DiscountedPrice);
+
+            cmd.Parameters.AddWithValue("@Stock", medicine.Stock);
+
+            cmd.Parameters.AddWithValue("@ExpiryDate", medicine.ExpiryDate);
+
+            cmd.Parameters.AddWithValue("@Description", medicine.Description);
+
+            cmd.Parameters.AddWithValue("@ImageUrl", medicine.ImageUrl);
+
+            connection.Open();
+
+            cmd.ExecuteNonQuery();
+
+            connection.Close();
+
+            response.StatusCode = 200;
+            response.StatusMessage = "Medicine Saved Successfully";
+        }
+        catch (Exception ex)
+        {
+            response.StatusCode = 500;
+            response.StatusMessage = ex.Message;
+        }
+
+        return response;
+    }
     
     /* DELETE MEDICINE */
     public Response DeleteMedicine(int id, SqlConnection connection)
